@@ -3,101 +3,537 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}{{ site_name|default:"TableFor" }}{% endblock %} — HK Restaurant Guide</title>
+    <title>{% block title %}{{ site_name|"TableFor" }}{% endblock %} — HK Restaurant Guide</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root { --tf-red: #E53E3E; --tf-dark: #1a202c; }
-        body { font-family: Inter, -apple-system, sans-serif; background: #f8f9fa; }
-        .navbar { background: white !important; box-shadow: 0 1px 3px rgba(0,0,0,.1); }
-        .navbar-brand { font-weight: 800; color: var(--tf-red) !important; font-size: 1.4rem; }
-        .nav-link { font-weight: 500; color: var(--tf-dark) !important; }
-        .nav-link:hover { color: var(--tf-red) !important; }
-        .btn-primary { background: var(--tf-red); border-color: var(--tf-red); }
-        .btn-primary:hover { background: #c53030; border-color: #c53030; }
-        .btn-outline-primary { color: var(--tf-red); border-color: var(--tf-red); }
-        .btn-outline-primary:hover { background: var(--tf-red); border-color: var(--tf-red); }
-        .hero { background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%); color: white; padding: 80px 0; }
-        .hero h1 { font-weight: 800; font-size: 2.5rem; }
-        .hero-search { max-width: 600px; margin: 30px auto 0; }
-        .hero-search .form-control { padding: 15px 20px; border-radius: 50px 0 0 50px; border: none; }
-        .hero-search .btn { border-radius: 0 50px 50px 0; padding: 15px 30px; }
-        .restaurant-card { border: none; border-radius: 16px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,.08); transition: transform .2s, box-shadow .2s; }
-        .restaurant-card:hover { transform: translateY(-4px); box-shadow: 0 8px 25px rgba(0,0,0,.15); }
-        .restaurant-card .card-img-top { height: 180px; object-fit: cover; }
-        .rating-badge { background: #48bb78; color: white; padding: 2px 8px; border-radius: 6px; font-weight: 600; font-size: .85rem; }
-        .price-badge { color: #718096; font-weight: 500; }
-        .cuisine-tag { display: inline-block; background: #edf2f7; color: #4a5568; padding: 2px 10px; border-radius: 20px; font-size: .75rem; margin-right: 4px; margin-bottom: 4px; }
-        .section-title { font-weight: 700; font-size: 1.5rem; margin-bottom: 24px; color: var(--tf-dark); }
-        .section-title a { color: var(--tf-red); font-size: .9rem; text-decoration: none; font-weight: 500; }
-        .district-card { background: white; border-radius: 12px; padding: 20px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,.06); transition: transform .2s; }
-        .district-card:hover { transform: translateY(-2px); }
-        .district-card .count { font-size: 1.5rem; font-weight: 700; color: var(--tf-red); }
-        .district-card .name { font-weight: 500; color: var(--tf-dark); }
-        .cuisine-icon { font-size: 2rem; }
-        footer { background: var(--tf-dark); color: #a0aec0; padding: 40px 0 20px; margin-top: 60px; }
-        footer a { color: #a0aec0; text-decoration: none; }
-        footer a:hover { color: white; }
-        .review-card { border: none; border-radius: 12px; box-shadow: 0 1px 4px rgba(0,0,0,.06); margin-bottom: 16px; }
-        .star-rating { color: #f6ad55; }
-        .booking-fab { position: fixed; bottom: 30px; right: 30px; z-index: 1050; }
-        .menu-category { font-weight: 700; color: var(--tf-red); margin: 20px 0 10px; text-transform: uppercase; font-size: .85rem; letter-spacing: 1px; }
-        .menu-item-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f0f0f0; }
-        .menu-item-price { color: var(--tf-red); font-weight: 600; }
-        .deal-badge { position: absolute; top: 12px; left: 12px; background: var(--tf-red); color: white; padding: 4px 12px; border-radius: 20px; font-size: .75rem; font-weight: 600; z-index: 2; }
-        .verified-badge { color: #48bb78; font-size: .85rem; }
+        :root {
+            --tf-primary: #D4380D;
+            --tf-primary-light: #FF7A45;
+            --tf-primary-dark: #AD2102;
+            --tf-gold: #D4A853;
+            --tf-dark: #1a1a2e;
+            --tf-darker: #0f0f1a;
+            --tf-gray: #6b7280;
+            --tf-light: #f8f9fa;
+            --tf-white: #ffffff;
+            --tf-success: #52c41a;
+            --tf-radius: 16px;
+            --tf-radius-sm: 10px;
+            --tf-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            --tf-shadow-lg: 0 12px 40px rgba(0,0,0,0.12);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #fafafa;
+            color: var(--tf-dark);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Playfair Display', serif;
+        }
+
+        /* ═══════ NAVBAR ═══════ */
+        .navbar {
+            background: rgba(255,255,255,0.92) !important;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0,0,0,0.04);
+            padding: 12px 0;
+            transition: all 0.3s ease;
+        }
+
+        .navbar.scrolled {
+            box-shadow: 0 4px 30px rgba(0,0,0,0.08);
+        }
+
+        .navbar-brand {
+            font-family: 'Playfair Display', serif;
+            font-weight: 800;
+            font-size: 1.6rem;
+            color: var(--tf-primary) !important;
+            letter-spacing: -0.5px;
+        }
+
+        .navbar-brand i { margin-right: 6px; }
+
+        .nav-link {
+            font-weight: 500;
+            color: var(--tf-dark) !important;
+            padding: 8px 16px !important;
+            border-radius: 50px;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+        }
+
+        .nav-link:hover {
+            color: var(--tf-primary) !important;
+            background: rgba(212, 56, 13, 0.06);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--tf-primary) 0%, var(--tf-primary-dark) 100%);
+            border: none;
+            padding: 10px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 15px rgba(212, 56, 13, 0.25);
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(212, 56, 13, 0.35);
+            background: linear-gradient(135deg, var(--tf-primary-light) 0%, var(--tf-primary) 100%);
+        }
+
+        .btn-outline-primary {
+            color: var(--tf-primary);
+            border: 2px solid var(--tf-primary);
+            padding: 8px 22px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-outline-primary:hover {
+            background: var(--tf-primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* ═══════ HERO ═══════ */
+        .hero {
+            background: linear-gradient(135deg, var(--tf-darker) 0%, var(--tf-dark) 50%, #2d1810 100%);
+            color: white;
+            padding: 100px 0 120px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1600&h=800&fit=crop') center/cover;
+            opacity: 0.2;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 120px;
+            background: linear-gradient(to top, #fafafa, transparent);
+        }
+
+        .hero .container { position: relative; z-index: 2; }
+
+        .hero h1 {
+            font-weight: 800;
+            font-size: 3.2rem;
+            letter-spacing: -1px;
+            text-shadow: 0 4px 30px rgba(0,0,0,0.3);
+        }
+
+        .hero p.lead {
+            font-size: 1.15rem;
+            opacity: 0.8;
+            font-weight: 300;
+        }
+
+        .hero-search {
+            max-width: 580px;
+            margin: 36px auto 0;
+        }
+
+        .hero-search .form-control {
+            padding: 18px 28px;
+            border-radius: 60px 0 0 60px;
+            border: none;
+            font-size: 1.05rem;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+        }
+
+        .hero-search .form-control:focus {
+            box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+        }
+
+        .hero-search .btn {
+            border-radius: 0 60px 60px 0;
+            padding: 18px 36px;
+            font-size: 1.05rem;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+        }
+
+        .hero-tags .btn-outline-light {
+            border-width: 1.5px;
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .hero-tags .btn-outline-light:hover {
+            background: white;
+            color: var(--tf-dark);
+            transform: translateY(-2px);
+        }
+
+        /* ═══════ RESTAURANT CARDS ═══════ */
+        .restaurant-card {
+            border: none;
+            border-radius: var(--tf-radius);
+            overflow: hidden;
+            box-shadow: var(--tf-shadow);
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            background: white;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .restaurant-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--tf-shadow-lg);
+        }
+
+        .restaurant-card .card-img-wrap {
+            height: 200px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .restaurant-card .card-img-top {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s ease;
+        }
+
+        .restaurant-card:hover .card-img-top {
+            transform: scale(1.08);
+        }
+
+        .restaurant-card .card-img-overlay {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+        }
+
+        .restaurant-card .card-body {
+            padding: 18px;
+        }
+
+        .restaurant-card .card-title {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 4px;
+        }
+
+        .rating-badge {
+            background: var(--tf-success);
+            color: white;
+            padding: 3px 10px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.8rem;
+        }
+
+        .price-badge {
+            color: var(--tf-gold);
+            font-weight: 600;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+        }
+
+        .cuisine-tag {
+            display: inline-block;
+            background: #fff7f5;
+            color: var(--tf-primary);
+            padding: 3px 12px;
+            border-radius: 50px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            margin-right: 4px;
+            margin-bottom: 4px;
+            border: 1px solid rgba(212, 56, 13, 0.1);
+        }
+
+        .card-district {
+            color: var(--tf-gray);
+            font-size: 0.82rem;
+            margin-bottom: 6px;
+        }
+
+        .card-district i { margin-right: 4px; }
+
+        /* ═══════ SECTIONS ═══════ */
+        .section-title {
+            font-weight: 700;
+            font-size: 1.8rem;
+            color: var(--tf-dark);
+            margin-bottom: 32px;
+        }
+
+        .section-title .view-more {
+            font-family: 'Inter', sans-serif;
+            color: var(--tf-primary);
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-decoration: none;
+            letter-spacing: 0;
+        }
+
+        .section-title .view-more:hover { text-decoration: underline; }
+
+        /* ═══════ DISTRICT / CUISINE CARDS ═══════ */
+        .district-card, .cuisine-card {
+            background: white;
+            border-radius: var(--tf-radius-sm);
+            padding: 24px 16px;
+            text-align: center;
+            box-shadow: var(--tf-shadow);
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+
+        .district-card:hover, .cuisine-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--tf-shadow-lg);
+            border-color: rgba(212, 56, 13, 0.1);
+        }
+
+        .district-card .count {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--tf-primary);
+        }
+
+        .district-card .name {
+            font-weight: 600;
+            color: var(--tf-dark);
+            font-size: 0.9rem;
+        }
+
+        .cuisine-icon { font-size: 2.2rem; margin-bottom: 8px; }
+
+        /* ═══════ REVIEWS ═══════ */
+        .review-card {
+            border: none;
+            border-radius: var(--tf-radius-sm);
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+            margin-bottom: 16px;
+            border-left: 3px solid var(--tf-primary);
+        }
+
+        .star-rating { color: #f59e0b; font-size: 0.9rem; }
+
+        .verified-badge {
+            color: var(--tf-success);
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        /* ═══════ MENU ═══════ */
+        .menu-category {
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            color: var(--tf-primary);
+            margin: 28px 0 14px;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--tf-primary);
+            display: inline-block;
+        }
+
+        .menu-item-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background 0.2s;
+        }
+
+        .menu-item-row:hover { background: #fafafa; padding-left: 8px; }
+
+        .menu-item-price {
+            color: var(--tf-primary);
+            font-weight: 700;
+            font-size: 1.05rem;
+        }
+
+        .menu-item-name {
+            font-weight: 600;
+            color: var(--tf-dark);
+        }
+
+        .menu-item-desc {
+            color: var(--tf-gray);
+            font-size: 0.85rem;
+            margin-top: 2px;
+        }
+
+        /* ═══════ BOOKING FAB ═══════ */
+        .booking-fab {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1050;
+            border-radius: 50px;
+            padding: 14px 28px;
+            font-weight: 600;
+            box-shadow: 0 8px 30px rgba(212, 56, 13, 0.35);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 8px 30px rgba(212, 56, 13, 0.35); }
+            50% { box-shadow: 0 8px 40px rgba(212, 56, 13, 0.5); }
+        }
+
+        /* ═══════ FOOTER ═══════ */
+        footer {
+            background: var(--tf-dark);
+            color: rgba(255,255,255,0.6);
+            padding: 60px 0 30px;
+            margin-top: 80px;
+        }
+
+        footer h5, footer h6 {
+            color: white;
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+
+        footer a {
+            color: rgba(255,255,255,0.5);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        footer a:hover { color: var(--tf-gold); }
+
+        footer hr { border-color: rgba(255,255,255,0.1); }
+
+        /* ═══════ DETAIL PAGE ═══════ */
+        .detail-hero {
+            height: 400px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+
+        .detail-hero::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 200px;
+            background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+        }
+
+        .detail-hero .container {
+            position: relative;
+            z-index: 2;
+            padding-top: 300px;
+        }
+
+        .detail-hero h1 {
+            color: white;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            font-size: 2.8rem;
+        }
+
+        .detail-hero .badge {
+            backdrop-filter: blur(10px);
+            background: rgba(255,255,255,0.15) !important;
+        }
+
+        /* ═══════ RESPONSIVE ═══════ */
+        @media (max-width: 768px) {
+            .hero { padding: 60px 0 80px; }
+            .hero h1 { font-size: 2rem; }
+            .hero-search .form-control { padding: 14px 20px; font-size: 0.95rem; }
+            .hero-search .btn { padding: 14px 24px; }
+            .restaurant-card .card-img-wrap { height: 160px; }
+            .detail-hero { height: 280px; }
+            .detail-hero .container { padding-top: 200px; }
+            .detail-hero h1 { font-size: 1.8rem; }
+        }
     </style>
     {% block extra_head %}{% endblock %}
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg sticky-top">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg sticky-top" id="mainNav">
         <div class="container">
-            <a class="navbar-brand" href="/"><i class="bi bi-shop"></i> TableFor</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain">
+            <a class="navbar-brand" href="/"><i class="bi bi-shop-window"></i> TableFor</a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navMain">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navMain">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown"><i class="bi bi-geo-alt"></i> Districts</a>
-                        <ul class="dropdown-menu">
+                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown"><i class="bi bi-geo-alt me-1"></i>Districts</a>
+                        <ul class="dropdown-menu border-0 shadow">
                             <li><a class="dropdown-item" href="/search/?district=Central">Central</a></li>
-                            <li><a class="dropdown-item" href="/search/?district=TST">TST</a></li>
-                            <li><a class="dropdown-item" href="/search/?district=Mong Kok">Mong Kok</a></li>
+                            <li><a class="dropdown-item" href="/search/?district=Tsim Sha Tsui">Tsim Sha Tsui</a></li>
                             <li><a class="dropdown-item" href="/search/?district=Wan Chai">Wan Chai</a></li>
+                            <li><a class="dropdown-item" href="/search/?district=Causeway Bay">Causeway Bay</a></li>
+                            <li><a class="dropdown-item" href="/search/?district=Mong Kok">Mong Kok</a></li>
+                            <li><a class="dropdown-item" href="/search/?district=Sheung Wan">Sheung Wan</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="{% url 'restaurants:districts' %}">View All</a></li>
+                            <li><a class="dropdown-item" href="{% url 'restaurants:districts' %}">View All Districts</a></li>
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown"><i class="bi bi-funnel"></i> Cuisines</a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="/search/?cuisine=Dim Sum">Dim Sum</a></li>
+                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown"><i class="bi bi-funnel me-1"></i>Cuisines</a>
+                        <ul class="dropdown-menu border-0 shadow">
+                            <li><a class="dropdown-item" href="/search/?cuisine=Chinese">Chinese</a></li>
                             <li><a class="dropdown-item" href="/search/?cuisine=Japanese">Japanese</a></li>
-                            <li><a class="dropdown-item" href="/search/?cuisine=Hotpot">Hotpot</a></li>
+                            <li><a class="dropdown-item" href="/search/?cuisine=Dim+Sum">Dim Sum</a></li>
                             <li><a class="dropdown-item" href="/search/?cuisine=Western">Western</a></li>
+                            <li><a class="dropdown-item" href="/search/?cuisine=Hotpot">Hotpot</a></li>
+                            <li><a class="dropdown-item" href="/search/?cuisine=Fusion">Fusion</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="{% url 'restaurants:cuisines' %}">View All</a></li>
+                            <li><a class="dropdown-item" href="{% url 'restaurants:cuisines' %}">View All Cuisines</a></li>
                         </ul>
                     </li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'deals:deal_list' %}"><i class="bi bi-tag"></i> Deals</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'deals:deal_list' %}"><i class="bi bi-tag me-1"></i>Deals</a></li>
                 </ul>
-                <form class="d-flex me-3" action="/search/" method="get" style="max-width:300px;">
+                <form class="d-flex me-2" action="/search/" method="get" style="max-width:260px;">
                     <div class="input-group">
-                        <input type="text" name="q" class="form-control form-control-sm" placeholder="Search restaurants..." value="{{ request.GET.q }}">
-                        <button class="btn btn-sm btn-primary" type="submit"><i class="bi bi-search"></i></button>
+                        <input type="text" name="q" class="form-control form-control-sm rounded-pill" placeholder="Search..." value="{{ request.GET.q }}" style="border-radius:50px 0 0 50px !important; padding:8px 16px; border:1px solid #e0e0e0;">
+                        <button class="btn btn-sm btn-primary" type="submit" style="border-radius:0 50px 50px 0 !important; padding:8px 14px;"><i class="bi bi-search"></i></button>
                     </div>
                 </form>
                 {% if user.is_authenticated %}
                 <div class="dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
-                        <i class="bi bi-person-circle"></i> {{ user.username }}
+                    <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" href="#" data-bs-toggle="dropdown">
+                        <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--tf-primary),var(--tf-primary-light));display:flex;align-items:center;justify-content:center;color:white;font-weight:600;font-size:0.8rem;">
+                            {{ user.username|first|upper }}
+                        </div>
+                        <span style="font-size:0.85rem;">{{ user.username }}</span>
                     </a>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="{% url 'accounts:profile' %}">My Profile</a></li>
-                        <li><a class="dropdown-item" href="{% url 'bookings:my_bookings' %}">My Bookings</a></li>
+                    <ul class="dropdown-menu dropdown-menu-end border-0 shadow">
+                        <li><a class="dropdown-item" href="{% url 'accounts:profile' %}"><i class="bi bi-person me-2"></i>My Profile</a></li>
+                        <li><a class="dropdown-item" href="{% url 'bookings:my_bookings' %}"><i class="bi bi-calendar me-2"></i>My Bookings</a></li>
                         <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="{% url 'accounts:logout' %}">Logout</a></li>
+                        <li><a class="dropdown-item" href="{% url 'accounts:logout' %}"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
                     </ul>
                 </div>
                 {% else %}
@@ -107,31 +543,55 @@
             </div>
         </div>
     </nav>
+
+    <!-- Messages -->
     {% if messages %}
     <div class="container mt-3">
         {% for msg in messages %}
-        <div class="alert alert-{{ msg.tags }} alert-dismissible fade show">{{ msg }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+        <div class="alert alert-{{ msg.tags }} alert-dismissible fade show border-0 shadow-sm" style="border-radius:12px;">{{ msg }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
         {% endfor %}
     </div>
     {% endif %}
+
+    <!-- Content -->
     {% block content %}{% endblock %}
+
+    <!-- Footer -->
     <footer>
         <div class="container">
             <div class="row">
                 <div class="col-md-4 mb-4">
-                    <h5 style="color:white;font-weight:700;"><i class="bi bi-shop"></i> TableFor</h5>
-                    <p class="mt-2">{{ site_tagline|default:"Hong Kong's honest restaurant discovery platform" }}</p>
+                    <h5><i class="bi bi-shop-window me-2"></i>TableFor</h5>
+                    <p class="mt-2" style="font-size:0.9rem;">Hong Kong's most honest restaurant discovery platform. Real reviews, real photos, real food.</p>
+                    <div class="d-flex gap-3 mt-3">
+                        <a href="#" style="font-size:1.2rem;"><i class="bi bi-facebook"></i></a>
+                        <a href="#" style="font-size:1.2rem;"><i class="bi bi-instagram"></i></a>
+                        <a href="#" style="font-size:1.2rem;"><i class="bi bi-telegram"></i></a>
+                        <a href="#" style="font-size:1.2rem;"><i class="bi bi-tiktok"></i></a>
+                    </div>
                 </div>
-                <div class="col-md-2 mb-4"><h6 style="color:white;">Explore</h6><p><a href="/search/">All Restaurants</a></p><p><a href="{% url 'restaurants:cuisines' %}">Cuisines</a></p><p><a href="{% url 'restaurants:districts' %}">Districts</a></p><p><a href="{% url 'deals:deal_list' %}">Deals</a></p></div>
-                <div class="col-md-2 mb-4"><h6 style="color:white;">Company</h6><p><a href="#">About Us</a></p><p><a href="#">Contact</a></p></div>
-                <div class="col-md-2 mb-4"><h6 style="color:white;">Legal</h6><p><a href="#">Terms</a></p><p><a href="#">Privacy</a></p></div>
-                <div class="col-md-2 mb-4"><h6 style="color:white;">Follow</h6><p><a href="#"><i class="bi bi-facebook"></i> Facebook</a></p><p><a href="#"><i class="bi bi-instagram"></i> Instagram</a></p><p><a href="#"><i class="bi bi-telegram"></i> Telegram</a></p></div>
+                <div class="col-md-2 mb-4"><h6>Explore</h6><p class="mb-1"><a href="/search/">All Restaurants</a></p><p class="mb-1"><a href="{% url 'restaurants:cuisines' %}">Cuisines</a></p><p class="mb-1"><a href="{% url 'restaurants:districts' %}">Districts</a></p><p class="mb-1"><a href="{% url 'deals:deal_list' %}">Deals</a></p></div>
+                <div class="col-md-2 mb-4"><h6>Company</h6><p class="mb-1"><a href="#">About Us</a></p><p class="mb-1"><a href="#">Contact</a></p><p class="mb-1"><a href="#">Careers</a></p><p class="mb-1"><a href="#">Blog</a></p></div>
+                <div class="col-md-2 mb-4"><h6>Legal</h6><p class="mb-1"><a href="#">Terms</a></p><p class="mb-1"><a href="#">Privacy</a></p><p class="mb-1"><a href="#">Cookies</a></p></div>
+                <div class="col-md-2 mb-4"><h6>Owners</h6><p class="mb-1"><a href="#">Add Restaurant</a></p><p class="mb-1"><a href="#">Owner Dashboard</a></p><p class="mb-1"><a href="#">Advertise</a></p></div>
             </div>
-            <hr style="border-color:#2d3748;">
-            <p class="text-center mb-0">&copy; 2026 TableFor. All rights reserved. Made with love in Hong Kong.</p>
+            <hr>
+            <div class="d-flex justify-content-between align-items-center flex-wrap">
+                <p class="mb-0" style="font-size:0.85rem;">&copy; 2026 TableFor. All rights reserved.</p>
+                <p class="mb-0" style="font-size:0.85rem;">Made with <span style="color:var(--tf-primary);">&#10084;</span> in Hong Kong</p>
+            </div>
         </div>
     </footer>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const nav = document.getElementById('mainNav');
+            if (window.scrollY > 50) nav.classList.add('scrolled');
+            else nav.classList.remove('scrolled');
+        });
+    </script>
     {% block extra_js %}{% endblock %}
 </body>
 </html>

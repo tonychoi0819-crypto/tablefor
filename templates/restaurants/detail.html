@@ -1,134 +1,190 @@
- "base.html" %}
- title %}{{ restaurant.name_en }} — {{ site_name }}{ %}
- content %}
-<div class="container py-4">
-    <!-- Header -->
-    <div class="row">
-        <div class="col-lg-8">
-            <span class="price-badge">{{ restaurant.price_range }}</span>
-            <h1 style="font-weight:800;margin-top:8px;">{{ restaurant.name_en }}</h1>
-            { restaurant.name_tc %}<p class="text-muted">{{ restaurant.name_tc }}</p>{ %}
-            <div class="d-flex align-items-center gap-3 flex-wrap">
-                <span class="rating-badge" style="font-size:1rem;padding:4px 12px;">{{ restaurant.avg_rating }} ({{ restaurant.review_count }} reviews)</span>
-                <span><i class="bi bi-geo-alt"></i> {{ restaurant.district.name_en }}</span>
-                { restaurant.status == 'verified' %}<span class="verified-badge"><i class="bi bi-patch-check-fill"></i> Verified</span>{ %}
-            </div>
-            <div class="mt-2">
-                { c in restaurant.cuisines.all %}
-                <span class="cuisine-tag">{{ c.name_en }}</span>
-                { %}
-                { t in restaurant.tags.all %}
-                <span class="cuisine-tag">{{ t.name_en }}</span>
-                { %}
-            </div>
-        </div>
-        <div class="col-lg-4">
-            <div class="card border-0 shadow-sm" style="border-radius:12px;padding:20px;">
-                <h6 style="font-weight:700;">📍 Location</h6>
-                <p class="small text-muted mb-1">{{ restaurant.address_en }}</p>
-                { restaurant.phone %}<p class="small mb-1"><i class="bi bi-telephone"></i> {{ restaurant.phone }}</p>{ %}
-                <hr>
-                { restaurant.opening_hours %}
-                <h6 style="font-weight:700;">🕐 Opening Hours</h6>
-                { day,hours in restaurant.opening_hours.items %}
-                <div class="d-flex justify-content-between small"><span>{{ day|title }}</span><span>{{ hours }}</span></div>
-                { %}
-                { %}
-            </div>
-        </div>
-    </div>
+{% extends "base.html" %}
+{% block title %}{{ restaurant.name_en }} — {{ site_name }}{% endblock %}
 
-    <!-- Menu -->
-    { menu_items %}
-    <div class="mt-5">
-        <h3 style="font-weight:700;">📋 Menu</h3>
-        {% regroup menu_items by get_category_display as categories %}
-        { cat in categories %}
-        <div class="menu-category">{{ cat.grouper }}</div>
-        { item in cat.list %}
-        <div class="menu-item-row">
-            <div>
-                <strong>{{ item.name_en }}</strong>
-                { item.name_tc %}<br><small class="text-muted">{{ item.name_tc }}</small>{ %}
-                { item.description %}<br><small class="text-muted">{{ item.description }}</small>{ %}
-            </div>
-            <div class="menu-item-price">{ item.price %}${ %}</div>
-        </div>
-        { %}
-        { %}
+{% block content %}
+<!-- Hero Image -->
+{% if restaurant.photo_url %}
+<div class="detail-hero" style="background-image:url('{{ restaurant.photo_url }}');">
+    <div class="container">
+        <span class="price-badge badge bg-dark me-2">{{ restaurant.price_range }}</span>
+        {% if restaurant.status == 'verified' %}<span class="badge verified-badge bg-success bg-opacity-75"><i class="bi bi-patch-check-fill"></i> Verified</span>{% endif %}
+        <h1 class="mt-2">{{ restaurant.name_en }}</h1>
+        {% if restaurant.name_tc %}<p style="color:rgba(255,255,255,0.7);font-size:1.1rem;">{{ restaurant.name_tc }}</p>{% endif %}
     </div>
-    { %}
-
-    <!-- Reviews -->
-    <div class="mt-5">
-        <h3 style="font-weight:700;">💬 Reviews ({{ reviews|length }})</h3>
-        { user.is_authenticated %}
-        <a href="{ 'reviews:write_review' restaurant.id %}" class="btn btn-primary btn-sm mb-3"><i class="bi bi-pencil me-1"></i>Write a Review</a>
-        { %}
-        { review in reviews %}
-        <div class="card review-card">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <strong>{{ review.user.username }}</strong>
-                        { review.is_verified %}<span class="verified-badge"><i class="bi bi-patch-check-fill"></i> Verified Diner</span>{ %}
-                        <div class="star-rating">
-                            { i in "x"|rjust:review.rating %}★{ %}
-                        </div>
-                    </div>
-                    <small class="text-muted">{{ review.created_at|date:"M d, Y" }}</small>
-                </div>
-                <h6 class="mt-2" style="font-weight:600;">{{ review.title }}</h6>
-                <p>{{ review.body }}</p>
-                { review.photos.exists %}
-                <div class="d-flex gap-2 mt-2">
-                    { photo in review.photos.all %}
-                    <img src="{{ photo.image.url }}" style="width:80px;height:80px;object-fit:cover;border-radius:8px;">
-                    { %}
-                </div>
-                { %}
-                <div class="d-flex gap-3 mt-2">
-                    <small class="text-muted">{{ review.get_meal_type_display|default:"" }} · Party of {{ review.party_size|default:"—" }}</small>
-                    { review.helpful_count > 0 %}<small class="text-muted">👍 {{ review.helpful_count }} found helpful</small>{ %}
-                </div>
-                { review.owner_response %}
-                <div class="alert alert-light mt-2" style="background:#f7fafc;">
-                    <strong>Owner replied:</strong> {{ review.owner_response }}
-                </div>
-                { %}
-            </div>
-        </div>
-        { %}
-        <div class="text-center py-4">
-            <i class="bi bi-chat-square-text" style="font-size:2.5rem;color:#a0aec0;"></i>
-            <p class="text-muted mt-2">No reviews yet. Be the first to review!</p>
-        </div>
-        { %}
-    </div>
-
-    <!-- Similar -->
-    { similar_restaurants %}
-    <div class="mt-5">
-        <h3 style="font-weight:700;">🍽️ Similar Restaurants</h3>
-        <div class="row g-4">
-            { r in similar_restaurants %}
-            <div class="col-6 col-md-3">
-                <div class="card restaurant-card h-100">
-                    <div class="card-body">
-                        <span class="rating-badge">{{ r.avg_rating }}</span>
-                        <h6 class="card-title mt-1" style="font-weight:600;">{{ r.name_en }}</h6>
-                        <p class="text-muted small">{{ r.district.name_en }}</p>
-                    </div>
-                </div>
-            </div>
-            { %}
-        </div>
-    </div>
-    { %}
-
-    <!-- Booking FAB -->
-    <a href="{ 'bookings:booking_create' restaurant.id %}" class="btn btn-primary btn-lg booking-fab shadow">
-        <i class="bi bi-calendar-check me-2"></i>Book a Table
-    </a>
 </div>
- %}
+{% else %}
+<div class="pt-4" style="background:linear-gradient(135deg,var(--tf-dark),#2d1810);color:white;">
+    <div class="container py-4">
+        <span class="price-badge badge bg-secondary me-2">{{ restaurant.price_range }}</span>
+        <h1 class="mt-2" style="font-family:'Playfair Display',serif;">{{ restaurant.name_en }}</h1>
+    </div>
+</div>
+{% endif %}
+
+<div class="container py-4">
+    <div class="row">
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <!-- Quick Info -->
+            <div class="d-flex align-items-center gap-3 flex-wrap mb-4">
+                <span class="rating-badge" style="font-size:1rem;padding:4px 14px;">{{ restaurant.avg_rating }} ({{ restaurant.review_count }} reviews)</span>
+                <span><i class="bi bi-geo-alt"></i> {{ restaurant.district.name_en }}</span>
+            </div>
+            <div class="mb-4">
+                {% for c in restaurant.cuisines.all %}<span class="cuisine-tag">{{ c.name_en }}</span>{% endfor %}
+                {% for t in restaurant.tags.all %}<span class="cuisine-tag" style="background:#f0fdf4;color:#16a34a;border-color:rgba(22,163,74,0.1);">{{ t.name_en }}</span>{% endfor %}
+            </div>
+
+            <!-- Gallery -->
+            {% if restaurant.photo_url %}
+            <div class="mb-4">
+                <img src="{{ restaurant.photo_url }}" class="img-fluid rounded-4 shadow-sm" alt="{{ restaurant.name_en }}" style="width:100%;max-height:400px;object-fit:cover;">
+            </div>
+            {% endif %}
+
+            <!-- Description (auto-generated) -->
+            <div class="card border-0 shadow-sm mb-4" style="border-radius:var(--tf-radius);">
+                <div class="card-body p-4">
+                    <h5 style="font-family:'Playfair Display',serif;">About</h5>
+                    <p class="text-muted mb-0">{{ restaurant.name_en }} is a {{ restaurant.get_price_range_display }} {% for c in restaurant.cuisines.all %}{{ c.name_en|lower }}{% if not forloop.last %}, {% endif %}{% endfor %} restaurant located in {{ restaurant.district.name_en }}. With a rating of {{ restaurant.avg_rating }} from {{ restaurant.review_count }} reviews, it's a {% if restaurant.avg_rating >= 4.5 %}highly acclaimed{% elif restaurant.avg_rating >= 4.0 %}well-loved{% endif %} dining destination in Hong Kong.</p>
+                </div>
+            </div>
+
+            <!-- Menu Items -->
+            {% if menu_items %}
+            <div class="mb-4">
+                <h3 style="font-family:'Playfair Display',serif;">&#128220; Menu</h3>
+                {% regroup menu_items by get_category_display as categories %}
+                {% for cat in categories %}
+                <div class="menu-category">{{ cat.grouper }}</div>
+                <div class="card border-0 mb-3">
+                    <div class="card-body p-0">
+                        {% for item in cat.list %}
+                        <div class="menu-item-row">
+                            <div>
+                                <div class="menu-item-name">{{ item.name_en }}</div>
+                                {% if item.name_tc %}<div class="menu-item-desc" style="font-family:sans-serif;">{{ item.name_tc }}</div>{% endif %}
+                                {% if item.description %}<div class="menu-item-desc">{{ item.description }}</div>{% endif %}
+                            </div>
+                            <div class="menu-item-price">{% if item.price %}${{ item.price }}{% else %}Market{% endif %}</div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- Reviews -->
+            {% if reviews %}
+            <div class="mb-4">
+                <h3 style="font-family:'Playfair Display',serif;">&#128172; Reviews ({{ reviews|length }})</h3>
+                {% if user.is_authenticated %}
+                <a href="{% url 'reviews:write_review' restaurant.id %}" class="btn btn-primary btn-sm mb-3"><i class="bi bi-pencil me-1"></i>Write a Review</a>
+                {% else %}
+                <p class="small text-muted"><a href="{% url 'accounts:login' %}">Login</a> to write a review.</p>
+                {% endif %}
+                {% for review in reviews %}
+                <div class="card review-card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div>
+                                <strong>{{ review.user.username }}</strong>
+                                {% if review.is_verified %}<span class="verified-badge ms-1"><i class="bi bi-patch-check-fill"></i> Verified Diner</span>{% endif %}
+                                <div class="star-rating">{% for i in "x"|rjust:review.rating %}★{% endfor %}</div>
+                            </div>
+                            <small class="text-muted">{{ review.created_at|date:"M d, Y" }}</small>
+                        </div>
+                        <h6 style="font-weight:600;">{{ review.title }}</h6>
+                        <p class="text-muted">{{ review.body }}</p>
+                        {% if review.get_meal_type_display %}
+                        <small class="text-muted">{{ review.get_meal_type_display }} · Party of {{ review.party_size|default:"—" }}</small>
+                        {% endif %}
+                        {% if review.owner_response %}
+                        <div class="alert alert-light mt-2 mb-0" style="background:#f8f9fa;border-color:#e9ecef;">
+                            <strong>Owner replied:</strong> {{ review.owner_response }}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- Similar -->
+            {% if similar_restaurants %}
+            <div class="mb-4">
+                <h3 style="font-family:'Playfair Display',serif;">&#127834; Similar Restaurants</h3>
+                <div class="row g-3">
+                    {% for r in similar_restaurants %}
+                    <div class="col-6 col-md-3">
+                        <a href="{% url 'restaurants:restaurant_detail' r.slug %}" class="restaurant-card">
+                            <div class="card-img-wrap" style="height:120px;">
+                                {% if r.photo_url %}
+                                <img src="{{ r.photo_url }}" class="card-img-top" alt="{{ r.name_en }}" loading="lazy">
+                                {% else %}
+                                <div class="card-img-top d-flex align-items-center justify-content-center" style="height:120px;background:linear-gradient(135deg,#f5f0eb,#e8ddd5);">
+                                    <i class="bi bi-shop" style="font-size:2rem;color:#c4b5a4;"></i>
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="card-body p-2">
+                                <span class="rating-badge">{{ r.avg_rating }}</span>
+                                <h6 class="mt-1" style="font-size:0.85rem;font-weight:600;">{{ r.name_en }}</h6>
+                                <small class="text-muted" style="font-size:0.75rem;">{{ r.district.name_en }}</small>
+                            </div>
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Location Card -->
+            <div class="card border-0 shadow-sm mb-4" style="border-radius:var(--tf-radius);">
+                <div class="card-body p-4">
+                    <h6 style="font-weight:700;">&#128205; Location</h6>
+                    <p class="text-muted small mb-1">{{ restaurant.address_en }}</p>
+                    {% if restaurant.phone %}<p class="small mb-1"><i class="bi bi-telephone me-2"></i> {{ restaurant.phone }}</p>{% endif %}
+                    {% if restaurant.website %}<p class="small mb-1"><i class="bi bi-globe me-2"></i> <a href="{{ restaurant.website }}" target="_blank">Website</a></p>{% endif %}
+                </div>
+            </div>
+
+            <!-- Hours Card -->
+            {% if restaurant.opening_hours %}
+            <div class="card border-0 shadow-sm mb-4" style="border-radius:var(--tf-radius);">
+                <div class="card-body p-4">
+                    <h6 style="font-weight:700;">&#128336; Opening Hours</h6>
+                    {% for day,hours in restaurant.opening_hours.items %}
+                    <div class="d-flex justify-content-between small" style="padding:4px 0;">
+                        <span style="font-weight:600;text-transform:capitalize;">{{ day }}</span>
+                        <span class="text-muted">{{ hours }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Tags -->
+            {% if restaurant.tags.all %}
+            <div class="card border-0 shadow-sm mb-4" style="border-radius:var(--tf-radius);">
+                <div class="card-body p-4">
+                    <h6 style="font-weight:700;">Tags</h6>
+                    {% for t in restaurant.tags.all %}
+                    <span class="cuisine-tag" style="background:{% if t.tag_type == 'dietary' %}#f0fdf4{% elif t.tag_type == 'atmosphere' %}#fef3c7{% else %}#eff6ff{% endif %};color:{% if t.tag_type == 'dietary' %}#16a34a{% elif t.tag_type == 'atmosphere' %}#d97706{% else %}#2563eb{% endif %};border-color:{% if t.tag_type == 'dietary' %}rgba(22,163,74,0.1){% elif t.tag_type == 'atmosphere' %}rgba(217,119,6,0.1){% else %}rgba(37,99,235,0.1){% endif %};">{{ t.name_en }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Booking FAB -->
+<a href="{% url 'bookings:booking_create' restaurant.id %}" class="btn btn-primary btn-lg booking-fab">
+    <i class="bi bi-calendar-check me-2"></i>Book a Table
+</a>
+{% endblock %}

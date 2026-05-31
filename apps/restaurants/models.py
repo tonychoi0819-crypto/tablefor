@@ -42,6 +42,7 @@ class Restaurant(models.Model):
     name_en = models.CharField(max_length=200)
     name_tc = models.CharField(max_length=200, blank=True)
     slug = models.SlugField(max_length=250, unique=True)
+    photo_url = models.URLField(blank=True, default='', help_text='External photo URL')
     district = models.ForeignKey(District, on_delete=models.PROTECT, related_name='restaurants')
     cuisines = models.ManyToManyField(Cuisine, related_name='restaurants', blank=True)
     tags = models.ManyToManyField(Tag, related_name='restaurants', blank=True)
