@@ -1,0 +1,39 @@
+ "base.html" %}
+ title { My %} Profile — {{ site_name }}{ %}
+ content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm" style="border-radius:16px;padding:30px;text-align:center;">
+                <div style="width:80px;height:80px;border-radius:50%;background:#edf2f7;margin:0 auto;display:flex;align-items:center;justify-content:center;">
+                    <i class="bi bi-person" style="font-size:2rem;color:#a0aec0;"></i>
+                </div>
+                <h4 style="font-weight:700;margin-top:15px;">{{ user.username }}</h4>
+                <p class="text-muted">{{ user.get_user_type_display }}</p>
+                { user.is_verified_diner %}<span class="verified-badge"><i class="bi bi-patch-check-fill"></i> Verified Diner</span>{ %}
+                <hr>
+                <div class="d-flex justify-content-around">
+                    <div><div style="font-weight:700;font-size:1.2rem;">{{ user.review_count }}</div><small class="text-muted">Reviews</small></div>
+                    <div><div style="font-weight:700;font-size:1.2rem;">{{ user.helpful_count }}</div><small class="text-muted">Helpful</small></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <h4 style="font-weight:700;">My Reviews</h4>
+            { review in user.reviews.all|slice:":10" %}
+            <div class="card review-card">
+                <div class="card-body">
+                    <strong>{{ review.restaurant.name_en }}</strong>
+                    <div class="star-rating">{ i in "x"|rjust:review.rating %}★{ %}</div>
+                    <h6 style="font-weight:600;">{{ review.title }}</h6>
+                    <p class="small">{{ review.body|truncatewords:30 }}</p>
+                    <small class="text-muted">{{ review.created_at|date:"M d, Y" }}</small>
+                </div>
+            </div>
+            { %}
+            <p class="text-muted">You haven't written any reviews yet.</p>
+            { %}
+        </div>
+    </div>
+</div>
+ %}

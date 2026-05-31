@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Restaurant Deals — {{ site_name }}{% endblock %}
+{% block content %}
+<div class="container py-5">
+    <h2 class="section-title">🔥 Restaurant Deals</h2>
+    {% if deals %}
+    <div class="row g-4">
+        {% for deal in deals %}
+        <div class="col-6 col-md-4 col-lg-3">
+            <div class="card restaurant-card h-100">
+                <div class="card-body">
+                    <span class="badge bg-danger mb-2">{{ deal.get_deal_type_display }}</span>
+                    <h6 class="card-title fw-bold">{{ deal.title }}</h6>
+                    <p class="text-muted small">{{ deal.restaurant.name_en }}</p>
+                    <p class="small">{{ deal.description|truncatewords:20 }}</p>
+                    {% if deal.discount_percent %}<p class="fw-bold" style="color:var(--tf-red);">{{ deal.discount_percent }}% OFF</p>{% endif %}
+                    <small class="text-muted">Until {{ deal.end_date|date:"M d, Y" }}</small>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+        <i class="bi bi-tag" style="font-size:3rem;color:#a0aec0;"></i>
+        <p class="text-muted mt-2">No active deals at the moment. Check back soon!</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

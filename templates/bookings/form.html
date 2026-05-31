@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Book a Table — {{ site_name }}{% endblock %}
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <h3 style="font-weight:700;">Book a Table</h3>
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Date</label>
+                    <input type="date" name="date" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Time</label>
+                    <input type="time" name="time" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Party Size</label>
+                    <input type="number" name="party_size" class="form-control" min="1" max="20" value="2">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Special Requests</label>
+                    <textarea name="special_requests" class="form-control" rows="3" placeholder="High chair, birthday cake, etc."></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Confirm Booking</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

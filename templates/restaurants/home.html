@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}Find the Best Restaurants in Hong Kong{% endblock %}
+{% block content %}
+<section class="hero">
+    <div class="container text-center">
+        <h1>Find Your Next Great Meal</h1>
+        <p class="lead mt-2" style="color:#cbd5e0;">{{ site_tagline }}</p>
+        <div class="hero-search">
+            <form action="/search/" method="get">
+                <div class="input-group input-group-lg">
+                    <input type="text" name="q" class="form-control" placeholder="Search by name, cuisine..." value="{{ request.GET.q }}">
+                    <button class="btn btn-primary" type="submit"><i class="bi bi-search me-2"></i>Search</button>
+                </div>
+            </form>
+        </div>
+        <div class="mt-4">
+            <a href="/search/?cuisine=Dim+Sum" class="btn btn-sm btn-outline-light ms-2">Dim Sum</a>
+            <a href="/search/?cuisine=Japanese" class="btn btn-sm btn-outline-light">Japanese</a>
+            <a href="/search/?district=Central" class="btn btn-sm btn-outline-light">Central</a>
+            <a href="/search/?q=hotpot" class="btn btn-sm btn-outline-light">Hotpot</a>
+        </div>
+    </div>
+</section>
+
+{% if featured_restaurants %}
+<section class="py-5"><div class="container">
+    <h2 class="section-title">Featured Restaurants <a href="/search/">View All</a></h2>
+    <div class="row g-4">
+        {% for r in featured_restaurants %}
+        <div class="col-6 col-md-4 col-lg-3">
+            <a href="{% url 'restaurants:restaurant_detail' r.slug %}" class="text-decoration-none">
+            <div class="card restaurant-card h-100">
+                <div class="card-img-top d-flex align-items-center justify-content-center" style="background:#edf2f7;">
+                    <i class="bi bi-shop" style="font-size:3rem;color:#a0aec0;"></i>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-1">
+                        <span class="rating-badge">{{ r.avg_rating }}</span>
+                        <span class="price-badge">{{ r.price_range }}</span>
+                    </div>
+                    <h6 class="card-title mb-1 fw-bold">{{ r.name_en }}</h6>
+                    <p class='text-muted small mb-1'><i class='bi bi-geo-alt'></i> {{ r.district.name_en }}</p>
+                    <div>{% for c in r.cuisines.all|slice:":3" %}<span class="cuisine-tag">{{ c.name_en }}</span>{% endfor %}</div>
+                </div>
+            </div></a>
+        </div>
+        {% endfor %}
+    </div>
+</div></section>
+{% endif %}
+
+<section class="py-5 bg-white"><div class="container">
+    <h2 class="section-title">Browse by District</h2>
+    <div class="row g-3">
+        {% for d in districts|slice:":24" %}
+        <div class="col-6 col-md-4 col-lg-3 col-xl-2">
+            <a href="/search/?district={{ d.name_en }}" class="text-decoration-none">
+            <div class="district-card">
+                <div class="count">{{ d.restaurants.count }}</div>
+                <div class="name">{{ d.name_en }}</div>
+                <small class="text-muted">{{ d.get_region_display }}</small>
+            </div></a>
+        </div>
+        {% endfor %}
+    </div>
+</div></section>
+
+<section class="py-5"><div class="container">
+    <h2 class="section-title">Browse by Cuisine</h2>
+    <div class="row g-3">
+        {% for c in cuisines %}
+        <div class="col-6 col-md-4 col-lg-3 col-xl-2">
+            <a href="/search/?cuisine={{ c.name_en }}" class="text-decoration-none">
+            <div class="district-card">
+                <div class="cuisine-icon">{{ c.icon|default:"&#127869;" }}</div>
+                <div class="name mt-2">{{ c.name_en }}</div>
+                <small class="text-muted">{{ c.restaurants.count }} restaurants</small>
+            </div></a>
+        </div>
+        {% endfor %}
+    </div>
+</div></section>
+{% endblock %}
